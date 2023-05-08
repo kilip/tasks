@@ -6,7 +6,7 @@ while true
 do
     /srv/tasks/bin/console tasks:check-grid -vvv
     if [[ -f $SHUTDOWN_LOCK ]]; then
-        sudo poweroff -p
+        # sudo poweroff -p
         exit 0
     else
         sleep 5                       ## wait 10 sec before repeating

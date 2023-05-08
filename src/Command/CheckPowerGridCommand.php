@@ -52,18 +52,11 @@ class CheckPowerGridCommand extends Command
 
         pcntl_signal(SIGINT, function (int $signal, $info) use ($shutdownLock, $lockFile) {
             $this->logger->info('Received shutdown signal');
-
-            if(is_file($shutdownLock)){
-                unlink($shutdownLock);
-            }
-            if(is_file($lockFile)){
-                unlink($lockFile);
-            }
+            $this->removeLockFile($shutdownLock);
+            $this->removeLockFile($lockFile);
         });
 
-        if(is_file($this->shutdownLock)){
-            unlink($this->shutdownLock);
-        }
+        $this->removeLockFile($shutdownLock);
 
         if(!is_file($this->lockFile)){
             touch($this->lockFile);
@@ -74,13 +67,21 @@ class CheckPowerGridCommand extends Command
             return 0;
         }
 
-        unlink($this->lockFile);
+        
+        $this->removeLockFile($this->lockFile);
         return 0;
+    }
+
+    private function removeLockFile(string $file): void
+    {
+        if(is_file($file)){
+            unlink($file);
+        }
     }
 
     private function doExecute(InputInterface $input, OutputInterface $output)
     {
-        $process = new Process(['ping', '-w', '1', '192.168.10.23']);
+        $process = new Process(['ping', '-w', '10', $this->emAddress]);
         $process->run();
 
         if(!$process->isSuccessful()){
@@ -109,9 +110,10 @@ class CheckPowerGridCommand extends Command
         $process = new Process([
             'ssh',
             'toni@'.$server,
-            'sudo',
-            'systemctl',
-            'suspend',
+            //'sudo',
+            //'systemctl',
+            //'suspend',
+            'whoami'
         ]);
 
         $process->start();
