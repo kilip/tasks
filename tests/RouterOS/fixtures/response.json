@@ -1,0 +1,193 @@
+[
+    {
+        ".id": "*16",
+        "cname": "ares.local",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "ares.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*14",
+        "address": "172.16.0.221",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "cloud.example.com",
+        "ttl": "1d"
+    },
+    {
+        ".id": "*1",
+        "cname": "eros.local",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "hass.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*2",
+        "address": "172.16.0.14",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "eros.local",
+        "ttl": "1d"
+    },
+    {
+        ".id": "*5",
+        "cname": "eros.local",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "mqtt.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*6",
+        "address": "172.16.0.5",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "zeus.local",
+        "ttl": "1d"
+    },
+    {
+        ".id": "*7",
+        "address": "172.16.0.12",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "mars.local",
+        "ttl": "1d"
+    },
+    {
+        ".id": "*8",
+        "address": "172.16.0.13",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "iris.local",
+        "ttl": "1d"
+    },
+    {
+        ".id": "*9",
+        "cname": "eros.local",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "proxy.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*A",
+        "address": "172.16.0.11",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "hera.local",
+        "ttl": "1d"
+    },
+    {
+        ".id": "*C",
+        "cname": "app.example.com",
+        "comment": "PXE Server",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "pxe.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*D",
+        "cname": "eros.local",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "app.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*10",
+        "cname": "eros.local",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "mqtt1.local",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*11",
+        "address": "172.16.0.223",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "mqtt2.local",
+        "ttl": "1d"
+    },
+    {
+        ".id": "*13",
+        "cname": "eros.local",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "mqtt.local",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*15",
+        "address": "172.16.0.1",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "ares.local",
+        "ttl": "1d"
+    },
+    {
+        ".id": "*17",
+        "cname": "eros.local",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "oh.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*18",
+        "cname": "k8s.example.com",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "kubernetes.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*1E",
+        "cname": "k8s.example.com",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "stats.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*19",
+        "cname": "eros.local",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "k8s.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*1A",
+        "cname": "k8s.example.com",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "hajimari.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    },
+    {
+        ".id": "*1B",
+        "cname": "k8s.example.com",
+        "disabled": "false",
+        "dynamic": "false",
+        "name": "gitops.example.com",
+        "ttl": "1d",
+        "type": "CNAME"
+    }
+]
