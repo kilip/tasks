@@ -6,10 +6,10 @@
 parameters:
     tasks.managed_servers: '%env(TASKS_MANAGED_SERVERS)%'
     tasks.mikrotik.config:
-        host: '%env(TASK_ROUTEROS_IP)%'
-        user: '%env(TASK_ROUTEROS_USER)%'
-        pass: '%env(TASK_ROUTEROS_PASS)%'
-        port: '%env(TASK_ROUTEROS_PORT)%'
+        host: '%env(TASKS_ROUTEROS_HOST)%'
+        port: '%env(TASKS_ROUTEROS_PORT)%'
+        username: '%env(TASKS_ROUTEROS_USER)%'
+        password: '%env(TASKS_ROUTEROS_PASS)%'
 
 services:
     # default configuration for services in *this* file
