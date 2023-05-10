@@ -81,7 +81,30 @@ class CheckPowerGridCommand extends Command
 
     private function doExecute(InputInterface $input, OutputInterface $output)
     {
-        $process = new Process(['ping', '-w', '10', $this->emAddress]);
+        $address = 'http://'.$this->emAddress;
+        $logger = $this->logger;
+
+        $client = new Client([
+            'base_uri' => $address,
+            'timeout' => '60'
+        ]);
+        $response = $client->request('GET', '/cm',[
+            'query' => [
+                'cmnd' => 'POWER',
+            ],
+            'auth' => ['admin', 'ajengcintaku']
+        ]);
+
+        if(200 === $response->getStatusCode()){
+            $context = json_decode($response->getBody(), true);
+            $logger->info('Successfully connect to grid monitor', $context);
+        }else{
+            $this->shutdownServers($output);
+        }
+
+
+        /*
+        $process = new Process(['ping', '-w', '60', $this->emAddress]);
         $process->run();
 
         if(!$process->isSuccessful()){
@@ -92,6 +115,7 @@ class CheckPowerGridCommand extends Command
         }
     
         return 0;
+        */
     }
 
     private function shutdownServers(OutputInterface $output): void
@@ -110,10 +134,9 @@ class CheckPowerGridCommand extends Command
         $process = new Process([
             'ssh',
             'toni@'.$server,
-            //'sudo',
+            'whoami',
             //'systemctl',
             //'suspend',
-            'whoami'
         ]);
 
         $process->start();

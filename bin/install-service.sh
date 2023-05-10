@@ -1,9 +1,10 @@
 #!/usr/bin/sh
 
-DEST=/etc/systemd/system/check-grid.service
-SRC=/srv/tasks/bin/check-grid.service
+DEST=/etc/systemd/system/grid-monitor.service
+SRC=/srv/tasks/bin/grid-monitor.service
 
 cp $SRC $DEST
 
-systemctl enable check-grid
-service check-grid start
+systemctl daemon-reload
+systemctl enable grid-monitor
+service grid-monitor start
