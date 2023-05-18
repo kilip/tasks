@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Process\Process;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 class CheckPowerGridCommand extends Command
 {
@@ -18,6 +19,7 @@ class CheckPowerGridCommand extends Command
     private string $lockFile;
     private string $shutdownLock;
     private LoggerInterface $logger;
+    private bool $dryRun;
 
     public function __construct(
         #[Autowire('%env(TASKS_ENERGY_MONITOR_IP)%')]
@@ -32,6 +34,9 @@ class CheckPowerGridCommand extends Command
         #[Autowire('%kernel.project_dir%/var/shutdown.lck')]
         string $shutdownLock,
 
+        #[Autowire('%env(TASKS_DRY_RUN)%')]
+        bool $dryRun,
+
         LoggerInterface $logger
     )
     {
@@ -40,6 +45,7 @@ class CheckPowerGridCommand extends Command
         $this->lockFile = $lockFile;
         $this->shutdownLock = $shutdownLock;
         $this->logger = $logger;
+        $this->dryRun = $dryRun;
 
         parent::__construct('tasks:check-grid');
     }
@@ -79,69 +85,68 @@ class CheckPowerGridCommand extends Command
         }
     }
 
-    private function doExecute(InputInterface $input, OutputInterface $output)
+    private function doExecute(): void
+    {
+        if(!$this->doRequest()){
+            $this->shutdownServers();
+        }
+    }
+
+    private function doRequest(): bool
     {
         $address = 'http://'.$this->emAddress;
         $logger = $this->logger;
-
         $client = new Client([
             'base_uri' => $address,
-            'timeout' => '60'
+            'timeout' => '3'
         ]);
-        $response = $client->request('GET', '/cm',[
-            'query' => [
-                'cmnd' => 'POWER',
-            ],
-            'auth' => ['admin', 'ajengcintaku']
-        ]);
-
-        if(200 === $response->getStatusCode()){
-            $context = json_decode($response->getBody(), true);
-            $logger->info('Successfully connect to grid monitor', $context);
-        }else{
-            $this->shutdownServers($output);
-        }
-
-
-        /*
-        $process = new Process(['ping', '-w', '60', $this->emAddress]);
-        $process->run();
-
-        if(!$process->isSuccessful()){
-            $this->logger->info("Failed to ping, shutting down servers");
-            $this->shutdownServers($output);
-        }else{
-            $this->logger->info('Successfully ping to server {0}', [$this->emAddress]);
-        }
+        
+        try{
+            $response = $client->request('GET', '/cm',[
+                'query' => [
+                    'cmnd' => 'POWER',
+                ],
+                'auth' => ['admin', 'ajengcintaku']
+            ]);
     
-        return 0;
-        */
+            if(200 === $response->getStatusCode()){
+                $context = json_decode($response->getBody(), true);
+                $logger->info('Successfully connect to grid monitor', $context);
+                return true;
+            }
+        }catch(\Exception $e){
+            $this->logger->alert($e->getMessage());
+        }
+        return false;
     }
 
-    private function shutdownServers(OutputInterface $output): void
+    private function shutdownServers(): void
     {
-        $this->logger->info('shuttingdown all servers');
+        $this->logger->alert('shuttingdown all servers');
         foreach($this->managedServers as $server){
-            $this->shutdown($output, $server);
+            $this->shutdown($server);
         }
         touch($this->shutdownLock);
     }
 
-    private function shutdown(OutputInterface $output, string $server): void
+    private function shutdown(string $server): void
     {
-        $this->logger->info('Shutting down {0}', [$server]);
+        $this->logger->alert('Shutting down node', [$server]);
 
         $process = new Process([
             'ssh',
             'toni@'.$server,
-            'whoami',
-            //'systemctl',
-            //'suspend',
+            'systemctl',
+            'suspend',
         ]);
 
-        $process->start();
-        foreach($process as $type => $data){
-            $output->writeln($data);
+        if(!$this->dryRun){
+            $process->start();
+            foreach($process as $type => $data){
+                $this->logger->alert("<info>Output</info> <comment>{0}</comment>", [$data]);
+            }
+        }else{
+            $this->logger->alert('Executing ssh command', [$process->getCommandLine()]);
         }
     }
 }

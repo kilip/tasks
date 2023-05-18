@@ -9,9 +9,9 @@ fi
 
 while true
 do
-    /srv/tasks/bin/console tasks:check-grid -vvv
+    /srv/tasks/bin/console tasks:check-grid
     if [[ -f $SHUTDOWN_LOCK ]]; then
-        sudo systemctl suspend
+        #sudo systemctl suspend
         exit 0
     else
         sleep 5                       ## wait 10 sec before repeating
