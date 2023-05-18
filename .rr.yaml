@@ -1,0 +1,33 @@
+version: '3'
+rpc:
+    listen: 'tcp://127.0.0.1:6001'
+server:
+  command: "php public/index.php"
+  env:
+    APP_ENV: "dev"
+    APP_RUNTIME: Runtime\RoadRunnerSymfonyNyholm\Runtime    
+
+http:
+    address: '0.0.0.0:8081'
+    middleware:
+        - gzip
+        - static
+    static:
+        dir: public
+        forbid:
+            - .php
+            - .htaccess
+    pool:
+        num_workers: 1
+        supervisor:
+            max_worker_memory: 100
+
+service:
+    grid-monitor:
+        service_name_in_log: true
+        remain_after_exit: false
+        restart_sec: 1
+        command: "./bin/console tasks:grid-monitor"
+
+metrics:
+    address: '127.0.0.1:2112'

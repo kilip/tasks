@@ -12,7 +12,7 @@ use Symfony\Component\Process\Process;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Input\InputOption;
 
-class CheckPowerGridCommand extends Command
+class GridMonitorCommand extends Command
 {
     private array $managedServers = [];
     private string $emAddress;
@@ -20,6 +20,8 @@ class CheckPowerGridCommand extends Command
     private string $shutdownLock;
     private LoggerInterface $logger;
     private bool $dryRun;
+
+    private bool $serversUp = true;
 
     public function __construct(
         #[Autowire('%env(TASKS_ENERGY_MONITOR_IP)%')]
@@ -47,49 +49,23 @@ class CheckPowerGridCommand extends Command
         $this->logger = $logger;
         $this->dryRun = $dryRun;
 
-        parent::__construct('tasks:check-grid');
+        parent::__construct('tasks:grid-monitor');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        // $process = new Process(['ping', '-w', '1', '192.168.10.23']);
-        $shutdownLock = $this->shutdownLock;
-        $lockFile = $this->lockFile;
-
-        pcntl_signal(SIGINT, function (int $signal, $info) use ($shutdownLock, $lockFile) {
-            $this->logger->info('Received shutdown signal');
-            $this->removeLockFile($shutdownLock);
-            $this->removeLockFile($lockFile);
-        });
-
-        $this->removeLockFile($shutdownLock);
-
-        if(!is_file($this->lockFile)){
-            touch($this->lockFile);
-            $this->doExecute($input, $output);
-        }else{
-            $this->logger->info('Tasks already running');
-            $output->writeln('tasks already running');
-            return 0;
+        while(true){
+            if(!$this->doRequest()){
+                if($this->serversUp){
+                    $this->shutdownServers();
+                }
+                $this->serversUp = false;
+            }else{
+                $this->serversUp = true;
+            }
         }
 
-        
-        $this->removeLockFile($this->lockFile);
         return 0;
-    }
-
-    private function removeLockFile(string $file): void
-    {
-        if(is_file($file)){
-            unlink($file);
-        }
-    }
-
-    private function doExecute(): void
-    {
-        if(!$this->doRequest()){
-            $this->shutdownServers();
-        }
     }
 
     private function doRequest(): bool
@@ -98,7 +74,7 @@ class CheckPowerGridCommand extends Command
         $logger = $this->logger;
         $client = new Client([
             'base_uri' => $address,
-            'timeout' => '3'
+            'timeout' => '5'
         ]);
         
         try{
@@ -115,7 +91,7 @@ class CheckPowerGridCommand extends Command
                 return true;
             }
         }catch(\Exception $e){
-            $this->logger->alert($e->getMessage());
+            $this->logger->alert('Timeout', [$this->emAddress]);
         }
         return false;
     }
